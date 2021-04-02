@@ -1,0 +1,22 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+.main {
+  width: 270px;
+  height: 570px;
+  background-color: black;
+  color: white;
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-family: "Helvetica";
+  margin: 10px auto;
+}
+hr {
+  width: 40%;
+  height: 5px;
+  background-color: #fff;
+  border-radius: 8px;
+  margin: 43px auto 0 auto;
+}
