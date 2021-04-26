@@ -6,9 +6,12 @@
   position: relative;
   .topArea {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
     color: #fff;
+    .time {
+      font-size: 12px;
+    }
     img {
       width: 50px;
     }

@@ -1,14 +1,14 @@
-import React, {useContext} from "react";
+import React, {useState, useEffect, useContext} from "react";
 import menu from '../../assets/image/menu.png';
 import {NumberContext} from "../Provider/NumberProvider";
 
 export default function DisplayResults() {
     const {value} = useContext(NumberContext);
     const getTime = () => new Date().toLocaleTimeString().slice(0, 5);
-    const [time, setTime] = React.useState(getTime());
-    React.useEffect(() => {
+    const [time, setTime] = useState(getTime());
+    useEffect(() => {
         setTime(getTime())
-    }, [value])
+    }, [value]);
     return (
         <div className="displayResults">
             <div className="topArea">
