@@ -19,7 +19,7 @@ const NumberProvider = props => {
                 if (current === '' && ch === '-') {
                     current = '-';
                 } else {
-                    calculation.push(parseFloat(current), ch);
+                    calculation.push((parseFloat(current).toPrecision(12)), ch);
                     current = '';
                 }
             } else {
@@ -35,21 +35,35 @@ const NumberProvider = props => {
     function calculate(calc) {
 
         let ops = [{
-                '×': function (a, b) {
-                    return a * b
-                },
+                '×':function(a,b){
+                    let r1,r2,m;
+                    try{r1=this.a.toString().split(".")[1].length}catch(e){r1=0}
+                    try{r2=this.b.toString().split(".")[1].length}catch(e){r2=0}
+                    m=Math.pow(10,Math.max(r1,r2));
+                    return ((a*m)*(b*m))/m;},
 
                 '÷': function (a, b) {
-                    return a / b
+                    let r1,r2,m;
+                    try{r1=this.a.toString().split(".")[1].length}catch(e){r1=0}
+                    try{r2=this.b.toString().split(".")[1].length}catch(e){r2=0}
+                    m=Math.pow(10,Math.max(r1,r2));
+                    return ((a*m)/(b*m))/m;
                 },
             }, {
-                '+': function (a, b) {
-                    return a + b
+                '+': function(a,b){
+                    let r1,r2,m;
+                    try{r1=this.a.toString().split(".")[1].length}catch(e){r1=0}
+                    try{r2=this.b.toString().split(".")[1].length}catch(e){r2=0}
+                    m=Math.pow(10,Math.max(r1,r2));
+                    return (a*m+b*m)/m;
                 },
 
-                '-': function (a, b) {
-                    return a - b
-                }
+                '-': function(a,b){
+                    let r1,r2,m;
+                    try{r1=this.a.toString().split(".")[1].length}catch(e){r1=0}
+                    try{r2=this.b.toString().split(".")[1].length}catch(e){r2=0}
+                    m=Math.pow(10,Math.max(r1,r2));
+                    return (a*m-b*m)/m;}
             }],
             newCalc = [],
             currentOp;
