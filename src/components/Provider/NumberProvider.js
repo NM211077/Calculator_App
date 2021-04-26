@@ -7,7 +7,7 @@ const NumberProvider = props => {
     const [value, setValue] = useState("0");
     const operators = ['+', '-', "×", "÷", "."];
     const checkValue = () => isNaN(value.toString().slice(-1)) || (value === 0);
-    const [memoryRegister, setMemoryRegister] = useState("0");
+    const [memoryRegister, setMemoryRegister] = useState(0);
 
 //  Parse a calculation string into an array of numbers and operators
     function parseCalculationString(s) {
@@ -63,7 +63,6 @@ const NumberProvider = props => {
                 } else {
                     newCalc.push(calc[j]);
                 }
-                console.log(newCalc);
             }
             calc = newCalc;
             newCalc = [];
@@ -76,14 +75,60 @@ const NumberProvider = props => {
         }
     }
 
- //Errors Handler
+//  Perform a Memories calculation expressed
+    function calculateMemory(calc,content) {
 
+        let ops = [{
+                '×': function (a, b) {
+                    return a * b
+                },
+
+                '÷': function (a, b) {
+                    return a / b
+                },
+            }, {
+                '+': function (a, b) {
+                    return a + b
+                },
+
+                '-': function (a, b) {
+                    return a - b
+                }
+            }],
+            newCalc = [],
+            currentOp;
+        for (let i = 0; i < ops.length; i++) {
+            for (let j = 0; j < calc.length; j++) {
+                if (ops[i][calc[j]]) {
+                    currentOp = ops[i][calc[j]];
+                } else if (currentOp) {
+                    newCalc[newCalc.length - 1] = currentOp(newCalc[newCalc.length - 1], calc[j]);
+                    currentOp = null;
+                } else {
+                    newCalc.push(calc[j]);
+                }
+            }
+            calc = newCalc;
+            newCalc = [];
+        }
+        if (calc.length > 1) {
+            setValue('Error: unable to resolve calculation');
+            return calc;
+        } else {
+            setValue("0");
+            if(content=== "m-"){return (setMemoryRegister(memoryRegister-(calc.join(''))));}
+            return (setMemoryRegister(memoryRegister+parseInt(calc.join(''))));
+        }
+    }
+
+ //Errors Handler
  const errorHandler=()=>{
      setValue('Error!');
      setTimeout(() => {
          setValue("0");
      }, 1800)
  } ;
+
 // Handler for buttons
     const buttonHandler = (content, type) => {
         operators.forEach(i => {
@@ -96,7 +141,7 @@ const NumberProvider = props => {
         });
         if (type === 'number') setValue(val => {
             if (val === "0") val = content;
-            else val += content
+            else val += content;
             return val;
         });
         switch (content) {
@@ -111,7 +156,7 @@ const NumberProvider = props => {
                     const val = value.replace(/^0+/, '');
                     calculate(parseCalculationString(val));
                 } catch (e) {
-                    errorHandler()
+                    errorHandler();
                 }
                 break;
             }
@@ -135,11 +180,8 @@ const NumberProvider = props => {
             case "m-": {
                 if (checkValue()) return;
                 try {
-                    const val = +value;
-                    const memory = +memoryRegister;
-                    const memoryReg = (memory - val).toString();
-                    setMemoryRegister(memoryReg);
-                    setValue("0")
+                    const val = value.replace(/^0+/, '');
+                    calculateMemory(parseCalculationString(val),"m-");
                 } catch (e) {
                     errorHandler()
                 }
@@ -148,16 +190,10 @@ const NumberProvider = props => {
             case "m+": {
                 if (checkValue()) return;
                 try {
-                    const val = +value;
-                    const memory = +memoryRegister;
-                    const memoryReg = (memory + val).toString();
-                    setMemoryRegister(memoryReg);
-                    setValue("0");
+                    const val = value.replace(/^0+/, '');
+                    calculateMemory(parseCalculationString(val),"m+");
                 } catch (e) {
-                    setValue('Error!');
-                    setTimeout(() => {
-                        setValue("0");
-                    }, 1800)
+                    errorHandler()
                 }
                 break;
             }
