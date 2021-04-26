@@ -11,4 +11,3 @@ npm install or yarn
 npm start or yarn start
 ```
 
-## Deploy
