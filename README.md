@@ -1,5 +1,5 @@
 # React Calculator App
-Use Hooks, Context API
+Use React, Hooks, Context API
 
 
 ## Installation
