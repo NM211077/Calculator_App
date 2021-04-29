@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import {division, errorHandler, multiply, subtraction, sum} from "../../utils/constants";
 
 export const NumberContext = React.createContext();
 
@@ -8,6 +9,7 @@ const NumberProvider = props => {
     const operators = ['+', '-', "×", "÷", "."];
     const checkValue = () => isNaN(value.toString().slice(-1)) || (value === 0);
     const [memoryRegister, setMemoryRegister] = useState(0);
+
 
 //  Parse a calculation string into an array of numbers and operators
     function parseCalculationString(s) {
@@ -19,7 +21,7 @@ const NumberProvider = props => {
                 if (current === '' && ch === '-') {
                     current = '-';
                 } else {
-                    calculation.push((parseFloat(current).toPrecision(12)), ch);
+                    calculation.push(parseFloat(current), ch);
                     current = '';
                 }
             } else {
@@ -29,41 +31,29 @@ const NumberProvider = props => {
         if (current !== '') {
             calculation.push(parseFloat(current));
         }
+        console.log('calculation', calculation);
         return calculation;
     }
+
 //  Perform a calculation expressed as an array of operators and numbers
     function calculate(calc) {
 
         let ops = [{
-                '×':function(a,b){
-                    let r1,r2,m;
-                    try{r1=this.a.toString().split(".")[1].length}catch(e){r1=0}
-                    try{r2=this.b.toString().split(".")[1].length}catch(e){r2=0}
-                    m=Math.pow(10,Math.max(r1,r2));
-                    return ((a*m)*(b*m))/m;},
+                '×': function (a, b) {
+                    return multiply(a, b);
+                },
 
                 '÷': function (a, b) {
-                    let r1,r2,m;
-                    try{r1=this.a.toString().split(".")[1].length}catch(e){r1=0}
-                    try{r2=this.b.toString().split(".")[1].length}catch(e){r2=0}
-                    m=Math.pow(10,Math.max(r1,r2));
-                    return ((a*m)/(b*m))/m;
+                    return division(a, b)
                 },
             }, {
-                '+': function(a,b){
-                    let r1,r2,m;
-                    try{r1=this.a.toString().split(".")[1].length}catch(e){r1=0}
-                    try{r2=this.b.toString().split(".")[1].length}catch(e){r2=0}
-                    m=Math.pow(10,Math.max(r1,r2));
-                    return (a*m+b*m)/m;
+                '+': function (a, b) {
+                    return sum(a, b);
                 },
 
-                '-': function(a,b){
-                    let r1,r2,m;
-                    try{r1=this.a.toString().split(".")[1].length}catch(e){r1=0}
-                    try{r2=this.b.toString().split(".")[1].length}catch(e){r2=0}
-                    m=Math.pow(10,Math.max(r1,r2));
-                    return (a*m-b*m)/m;}
+                '-': function (a, b) {
+                    return subtraction(a, b);
+                }
             }],
             newCalc = [],
             currentOp;
@@ -73,6 +63,7 @@ const NumberProvider = props => {
                     currentOp = ops[i][calc[j]];
                 } else if (currentOp) {
                     newCalc[newCalc.length - 1] = currentOp(newCalc[newCalc.length - 1], calc[j]);
+
                     currentOp = null;
                 } else {
                     newCalc.push(calc[j]);
@@ -90,23 +81,23 @@ const NumberProvider = props => {
     }
 
 //  Perform a Memories calculation expressed
-    function calculateMemory(calc,content) {
+    function calculateMemory(calc, content) {
 
         let ops = [{
                 '×': function (a, b) {
-                    return a * b
+                    return multiply(a, b);
                 },
 
                 '÷': function (a, b) {
-                    return a / b
+                    return division(a, b)
                 },
             }, {
                 '+': function (a, b) {
-                    return a + b
+                    return sum(a, b);
                 },
 
                 '-': function (a, b) {
-                    return a - b
+                    return subtraction(a, b);
                 }
             }],
             newCalc = [],
@@ -130,28 +121,32 @@ const NumberProvider = props => {
             return calc;
         } else {
             setValue("0");
-            if(content=== "m-"){return (setMemoryRegister(memoryRegister-(calc.join(''))));}
-            return (setMemoryRegister(memoryRegister+parseInt(calc.join(''))));
+            if (content === "m-") {
+                return (setMemoryRegister(memoryRegister - (calc.join(''))));
+            }
+            return (setMemoryRegister(memoryRegister + parseInt(calc.join(''))));
         }
     }
 
- //Errors Handler
- const errorHandler=()=>{
-     setValue('Error!');
-     setTimeout(() => {
-         setValue("0");
-     }, 1800)
- } ;
+    //Errors Handler
+    const errorHandler = () => {
+        setValue('Error!');
+        setTimeout(() => {
+            setValue("0");
+        }, 1800)
+    };
 
 // Handler for buttons
     const buttonHandler = (content, type) => {
         operators.forEach(i => {
             if (i === content) {
+                console.log(checkValue());
                 setValue(val => {
                     if (checkValue()) return val;
                     return val + content
                 })
             }
+            console.log('setValue',value);
         });
         if (type === 'number') setValue(val => {
             if (val === "0") val = content;
@@ -195,7 +190,7 @@ const NumberProvider = props => {
                 if (checkValue()) return;
                 try {
                     const val = value.replace(/^0+/, '');
-                    calculateMemory(parseCalculationString(val),"m-");
+                    calculateMemory(parseCalculationString(val), "m-");
                 } catch (e) {
                     errorHandler()
                 }
@@ -205,7 +200,7 @@ const NumberProvider = props => {
                 if (checkValue()) return;
                 try {
                     const val = value.replace(/^0+/, '');
-                    calculateMemory(parseCalculationString(val),"m+");
+                    calculateMemory(parseCalculationString(val), "m+");
                 } catch (e) {
                     errorHandler()
                 }
