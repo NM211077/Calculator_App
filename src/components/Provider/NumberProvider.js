@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {division, errorHandler, multiply, subtraction, sum} from "../../utils/constants";
+import {division, multiply, subtraction, sum} from "../../utils/constants";
 
 export const NumberContext = React.createContext();
 
